@@ -114,7 +114,6 @@ if search_button:
 display_verse(st.session_state.verse_results)
         
 st.markdown("---")
-st.markdown("`need context or clarification about a verse? simply search, and ask me anything.`")
 
 
 # implement large language model
@@ -132,7 +131,7 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-if prompt := st.chat_input("ask here..."):
+if prompt := st.chat_input("need context or clarification?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
