@@ -10,19 +10,19 @@ if "verse_results" not in st.session_state:
  
 st.title("`𝚢𝚘𝚞𝚛 𝚍𝚊𝚒𝚕𝚢 𝚋𝚛𝚎𝚊𝚍 ☻`")
 st.header("Search a Bible Verse in KJV")
+# want this color: #1866cc
 
 
 with st.sidebar:
     st.header("Search Instructions")
     st.markdown("""
-    - Search an entire chapter :red['Philippians 4']
+    - Search an `entire chapter` like :red[Philippians 4]
     
-    - Search a single verse :red['Jeremiah 29:11']
+    - Search a `single verse` like :red[Jeremiah 29:11]
     
-    - Search for a range of verses :red['Matthew 6:25-34']
+    - Search for a `range of verses` like :red[Matthew 6:25-34]
     
-    - Search for multiple chapters :red['Genesis 1-2'] or :red['John 3:16-4:10']
-    
+    - Search for `multiple chapters` like :red[Genesis 1-2] or :red[John 3:16-4:10]
     
     """)
     st.markdown("---")
@@ -85,9 +85,8 @@ if search_button:
 # Always display stored verse results
 display_verse(st.session_state.verse_results)
         
-
 st.markdown("---")
-st.markdown("`𝚊𝚜𝚔 𝚚𝚞𝚎𝚜𝚝𝚒𝚘𝚗𝚜 𝚋𝚎𝚕𝚘𝚠 𝚝𝚘 𝚘𝚞𝚛 𝚜𝚒𝚕𝚕𝚢 𝚕𝚒𝚝𝚝𝚕𝚎 𝙻𝙻𝙼 𝚏𝚘𝚛 𝚋𝚊𝚜𝚒𝚌 𝚋𝚒𝚋𝚕𝚒𝚌𝚊𝚕 𝚐𝚞𝚒𝚍𝚊𝚗𝚌𝚎! (𝚐𝚙𝚝-𝟹.𝟻-𝚝𝚞𝚛𝚋𝚘)`")
+st.markdown("`𝚊𝚜𝚔 𝚚𝚞𝚎𝚜𝚝𝚒𝚘𝚗𝚜 𝚋𝚎𝚕𝚘𝚠 𝚝𝚘 𝚘𝚞𝚛 𝚜𝚒𝚕𝚕𝚢 𝚕𝚒𝚝𝚝𝚕𝚎 𝙻𝙻𝙼 (𝚐𝚙𝚝-𝟹.𝟻-𝚝𝚞𝚛𝚋𝚘)`")
 
 # implement large language model
 
@@ -102,16 +101,11 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        
+
 if prompt := st.chat_input("Ask a question here..."):
-    # st.chat_message("user").markdown(f"You: {prompt}")
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    # response = f"LLM: {prompt}"
-    # with st.chat_message("assistant"):
-    #     st.markdown(response)
-    # st.session_state.messages.append({"role": "assistant", "content": response})
     with st.chat_message("assistant"):
         stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
