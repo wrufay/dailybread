@@ -36,7 +36,7 @@ if "verse_results" not in st.session_state:
     st.session_state.verse_results = None
  
 st.title("`☻ welcome`")
-st.markdown("`to your personal KJV bible - for supplementing your studies.`")
+st.markdown("`to your personal bible - for supplementing your studies.`")
 st.markdown("---")
 st.markdown("""<style>h1 { color: #1866cc }</style> <h1>lookup a chapter or verse:</h1>""", unsafe_allow_html=True)
 # want this color: #1866cc
@@ -61,21 +61,34 @@ with st.sidebar:
                 </div>
                 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1, 0.5, 0.5])
+col1, col2, col3, col4 = st.columns([1, 0.5, 0.5, 0.5])
 
 with col1:
-    book = st.text_input("Book Name", placeholder="Genesis")
+    TRANSLATIONS = {
+        "kjv": "King James Version",
+        "web": "World English Bible",
+        "bbe": "Bible in Basic English",
+        "asv": "American Standard Version", 
+    }
+    translation = st.selectbox(
+        "Select Translation",
+        options=TRANSLATIONS.keys(),
+        format_func=lambda x: TRANSLATIONS[x]
+    )
 
 with col2:
-    verse = st.text_input("Chapter + Verse", placeholder="1:1")
+    book = st.text_input("Book Name", placeholder="Genesis")
 
 with col3:
+    verse = st.text_input("Chapter + Verse", placeholder="1:1")
+
+with col4:
     st.markdown("<br>", unsafe_allow_html=True)
     search_button = st.button("Search", type="secondary")
 
 
-def get_verse(book, verse):
-    url = f'https://bible-api.com/{book}+{verse}?translation=kjv'
+def get_verse(book, verse, translation):
+    url = f'https://bible-api.com/{book}+{verse}?translation={translation}'
     try:
         response = requests.get(url)
         if response.status_code == 404:
@@ -103,7 +116,7 @@ def display_verse(bible_content):
 if search_button:
     if book and verse:
         with st.spinner("..."):
-            result = get_verse(book, verse)
+            result = get_verse(book, verse, translation)
             if result:
                 st.session_state.verse_results = result
     elif book and not verse:
