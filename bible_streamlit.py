@@ -114,12 +114,12 @@ def display_verse(bible_content):
         base_ref = reference.split(':')[0] if ':' in reference else reference
 
         for v in bible_content["verses"]:
-            col_text, col_copy = st.columns([10, 1])
-            with col_text:
-                st.write(f'`{v["verse"]}` {v["text"]}')
-            with col_copy:
-                full_verse = f"{base_ref}:{v['verse']} - {v['text'].strip()}"
-                st_copy_to_clipboard(full_verse, before_copy_label="ᶜᵒᵖʸ", after_copy_label="✓")
+            # col_text = st.columns(1)
+            # with col_text:
+            st.write(f'`{v["verse"]}` {v["text"]}')
+            # with col_copy:
+            #     full_verse = f"{base_ref}:{v['verse']} - {v['text'].strip()}"
+            #     st_copy_to_clipboard(full_verse, before_copy_label="ᴄᴏᴘʏ", after_copy_label="✓")
 
 
 if search_button:
