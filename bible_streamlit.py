@@ -119,7 +119,7 @@ def display_verse(bible_content):
                 st.write(f'`{v["verse"]}` {v["text"]}')
             with col_copy:
                 full_verse = f"{base_ref}:{v['verse']} - {v['text'].strip()}"
-                st_copy_to_clipboard(full_verse, before_copy_label="📋", after_copy_label="✓")
+                st_copy_to_clipboard(full_verse, before_copy_label="ᶜᵒᵖʸ", after_copy_label="✓")
 
 
 if search_button:
