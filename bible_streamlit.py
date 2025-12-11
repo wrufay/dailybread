@@ -111,7 +111,10 @@ def display_verse(bible_content):
         st.badge(f"{bible_content['reference']}", color="blue")
 
         reference = bible_content['reference']
+    
         base_ref = reference.split(':')[0] if ':' in reference else reference
+        base_book = base_ref.split(" ")[0]
+        base_chapter = base_ref.split(" ")[1]
 
         for v in bible_content["verses"]:
             # col_text = st.columns(1)
@@ -120,6 +123,20 @@ def display_verse(bible_content):
             # with col_copy:
             #     full_verse = f"{base_ref}:{v['verse']} - {v['text'].strip()}"
             #     st_copy_to_clipboard(full_verse, before_copy_label="ᴄᴏᴘʏ", after_copy_label="✓")
+            
+        # add  a link to enduring word bible commentary
+        # + bibleref while im at it lol.
+        st.markdown("---")
+        col1, col2, col3 = st.columns([2, 1, 1])
+        with col1:
+            st.markdown(f'**Read commentary on {base_ref}:**')
+        with col2:
+            # note bug: in enduring word they call it"psalm" without  the s.
+            st.page_link(label=f':blue[from **Enduring Word**]',
+                        page=f'https://enduringword.com/bible-commentary/{base_book}-{base_chapter}/')
+        with col3:
+            st.page_link(label=f':blue[from **BibleRef**]',
+                        page=f'https://www.bibleref.com/{base_book}/{base_chapter}/{base_book}-chapter-{base_chapter}.html')
 
 
 if search_button:
@@ -134,8 +151,6 @@ if search_button:
         st.warning("Please enter both a book name and verse.")
 
 display_verse(st.session_state.verse_results)
-        
-st.markdown("---")
 
 
 # implement large language model
@@ -153,7 +168,7 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-if prompt := st.chat_input("need context or clarification?"):
+if prompt := st.chat_input("need more context or clarification?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
