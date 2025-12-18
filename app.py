@@ -1,3 +1,10 @@
+# NOTES (not for today cuz LATE)
+# actually add a section talking about why this app was made
+# and like who is Jesus and stuff like that
+# or at least provide a link to it 
+# but yeah what's the goal again YE preach the Word amen.
+
+
 from openai import OpenAI
 import streamlit as st
 import requests
@@ -26,13 +33,12 @@ def init_auth_state():
 def auth_modal():
     """Combined modal for login, signup, and password reset"""
     #logo
-    st.image("bread.ico", width=67)
+    # st.image("bread.ico", width=67)
     # NOTE: need to fix the forgot password, actually add the logic
-    tab1, tab2 = st.tabs(["Log in", "Create account"])  # tab3 commented out for now
+    tab1, tab2 = st.tabs(["Log in", "I'm new here"]) 
 
     with tab1:
         # LOGIN
-        st.write("Welcome back! Sign in to see your saved notes and verses.")
         login_email = st.text_input("Email", key="login_email")
         login_password = st.text_input("Password", type="password", key="login_password")
 
@@ -61,12 +67,12 @@ def auth_modal():
 
     with tab2:
         # SIGN UP
-        st.write("Create an account and level up your Bible study today.")
+        st.write("Don't have an account? Create one today ☻")
         signup_email = st.text_input("Email", key="signup_email")
         signup_password = st.text_input("Password (min 6 characters)", type="password", key="signup_password")
         signup_password_confirm = st.text_input("Confirm Password", type="password", key="signup_password_confirm")
 
-        if st.button("Create Account", key="signup_btn"):
+        if st.button("Create account", key="signup_btn"):
             if signup_email and signup_password and signup_password_confirm:
                 if signup_password != signup_password_confirm:
                     st.error("Passwords don't match!")
@@ -95,7 +101,7 @@ def auth_modal():
             else:
                 st.error("Please fill in all fields")
 
-    # FORGOT PASSWORD - Commented out for now
+    # FORGOT PASSWORD 
     # with tab3:
     #     # PASSWORD RESET
     #     st.write("Enter your email to receive a password reset link")
@@ -122,7 +128,6 @@ def logout():
     except Exception as e:
         st.error(f"Logout failed: {str(e)}")
 
-# Saved verses functions
 def save_verse_reference(reference, translation, notes=""):
     """Save a verse reference to the database"""
     if not st.session_state.user:
@@ -130,16 +135,16 @@ def save_verse_reference(reference, translation, notes=""):
         return False
 
     try:
-        # Check if already saved to avoid duplicates
+        # avoid duplicates
         existing = supabase.table("saved_verses").select("id").eq("user_id", st.session_state.user.id).eq("reference", reference).execute()
         if existing.data:
-            st.warning(f"{reference} is already saved!")
+            st.warning(f"{reference} is already saved!", icon="⚠️")
             return False
 
         supabase.table("saved_verses").insert({
             "user_id": st.session_state.user.id,
             "reference": reference,
-            "verse_text": "",  # Empty since we're just storing the reference
+            "verse_text": "", 
             "translation": translation,
             "notes": notes
         }).execute()
@@ -174,7 +179,6 @@ def parse_reference(reference):
     """Parse reference like 'Genesis 1:1' into book and verse"""
     parts = reference.split()
     if len(parts) >= 2:
-        # Handle books with multiple words like "1 Corinthians"
         if parts[0].isdigit() and len(parts) >= 3:
             book = f"{parts[0]} {parts[1]}"
             verse = parts[2]
@@ -184,28 +188,35 @@ def parse_reference(reference):
         return book, verse
     return None, None
 
-@st.dialog("Verse Details")
-def verse_detail_modal(verse):
-    """Modal to show details of a single saved verse"""
-    st.subheader(f"{verse['reference']} ({verse['translation']})")
+@st.dialog(" ")
+def save_verse_modal(reference, translation):
+    """Modal to save a verse with optional notes"""
+    st.write(f"Saving **{reference}** ({translation})")
 
-    # Display notes if they exist
+    notes_input = st.text_area("Add notes", key="modal_verse_notes", placeholder="", height=67)
+
+    if st.button("Save", key="confirm_save_btn", use_container_width=True):
+        if save_verse_reference(reference, translation, notes_input):
+            st.rerun()
+
+@st.dialog(" ")
+def verse_detail_modal(verse):
+    st.subheader(f"{verse['reference']} ({verse['translation']})")
+    
+    # get notes
     if verse.get('notes') and verse['notes'].strip():
         st.markdown("**your notes:**")
         st.info(verse['notes'])
     else:
-        st.caption("no notes for this verse.")
+        st.caption("No notes for this bookmark.")
 
-    st.markdown("---")
-
-    # Action buttons
     col1, col2 = st.columns(2)
-
+    
+    # actions in the modal
     with col1:
-        if st.button("Load this verse", key=f"load_detail_{verse['id']}", use_container_width=True):
+        if st.button("Load", key=f"load_detail_{verse['id']}", use_container_width=True):
             book, verse_ref = parse_reference(verse['reference'])
             if book and verse_ref:
-                # Fetch the verse
                 result = get_verse(book, verse_ref, verse['translation'])
                 if result:
                     st.session_state.verse_results = result
@@ -258,8 +269,6 @@ st.markdown("""
 
 # init
 init_auth_state()
-
-# Restore Supabase auth session if user is logged in
 if "access_token" in st.session_state and st.session_state.access_token:
     supabase.postgrest.auth(st.session_state.access_token)
 
@@ -292,23 +301,23 @@ with st.sidebar:
 
     # check if user is logged in , display dif things
     if st.session_state.user: # logged in
-        if st.button("Sign Out", key="logout_btn"):
+        if st.button("Log Out", key="logout_btn"):
             logout()
         st.markdown("---")
-
-        # Show saved verses list
-        st.subheader("My Saved Verses")
+        
+        # show saved verses/bookmarks
+        st.subheader("Bookmarks")
         saved_verses = get_saved_verses()
 
         if not saved_verses:
-            st.caption("no saved verses yet!")
+            st.caption("No bookmarks here yet!")
         else:
             for verse in saved_verses:
-                if st.button(f"{verse['reference']}", key=f"verse_{verse['id']}", use_container_width=True):
+                if st.button(f"{verse['reference']}", key=f"verse_{verse['id']}"):
                     verse_detail_modal(verse)
 
     else: # if user is not logged in, don't show
-        if st.button("Sign in / Create account", key="open_auth_modal"):
+        if st.button("Log in", key="open_auth_modal"):
             auth_modal()
 
     st.markdown("---")
@@ -360,6 +369,8 @@ with col1:
         format_func=lambda x: TRANSLATIONS[x]
     )
 
+
+# display stuff
 with col2:
     book = st.text_input("Book Name", placeholder="Genesis")
 
@@ -389,7 +400,7 @@ def get_verse(book, verse, translation):
         st.error(f"An error occurred: {str(e)}")
         return None
 
-# logic to show the bible vers
+# logic to show the bible verse
 def display_verse(bible_content, translation="kjv"):
     if bible_content:
         st.markdown("---")
@@ -413,31 +424,28 @@ def display_verse(bible_content, translation="kjv"):
             ve=str_split[2]
 
 
-        # note bug: in enduring word they call it"psalm" without  the s.
+        # note bug: in enduring word they call it "psalm" without  the s.
         if ch == "Psalms":
             ch = "Psalm"
 
         enduring_word_path = f'https://enduringword.com/bible-commentary/{pr}{ch}-{ve}/'
         for v in bible_content["verses"]:
             st.write(f'`{v["verse"]}` {v["text"]}')
-
-        # add  a link to enduring word bible commentary
+            
         st.markdown("---")
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            st.markdown(f'**Read commentary on {base_ref}:**')
-        with col2:
-            st.page_link(label=f':blue[from **Enduring Word**]', page=enduring_word_path)
-
-        # Save button (only show if logged in)
+        
+        
+        # show save verse button only if logged in
         if st.session_state.user:
-            notes_input = st.text_area("Keep this passage for later!", key="verse_notes", placeholder="add your thoughts, reflections or notes here...")
-            if st.button("Save", key="save_verse_btn", use_container_width=True):
-                if save_verse_reference(reference, translation.upper(), notes_input):
-                    # Clear the notes input after saving
-                    st.session_state.verse_notes = ""
-
-
+            if st.button("Make bookmark"):
+                save_verse_modal(reference, translation.upper())
+                
+        # link to enduring word bible commentary
+        st.page_link(label=f'Read commentary on this chapter from :blue[**Enduring Word**]', page=enduring_word_path)
+            
+        st.markdown("---")
+        
+        
 # trigger with the search btn
 if search_button:
     if book and verse:
@@ -470,7 +478,7 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-if prompt := st.chat_input("need more context?"):
+if prompt := st.chat_input("ask an ai.."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
