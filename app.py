@@ -205,7 +205,7 @@ def verse_detail_modal(verse):
     
     # get notes
     if verse.get('notes') and verse['notes'].strip():
-        st.markdown(verse['notes'])
+        st.markdown(f':red[{verse['notes']}]')
     else:
         # maybe make a way you can add notes / edit
         st.caption("No notes written.")
