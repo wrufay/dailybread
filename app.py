@@ -19,7 +19,7 @@ from streamlit_js_eval import streamlit_js_eval
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 # setup page
-st.set_page_config(page_title="✎𓂃daily bread", page_icon="bread.ico", layout="centered")
+st.set_page_config(page_title="✎ bible app", page_icon="bread.ico", layout="centered")
 
 # login authentication featurss
 def init_auth_state():
