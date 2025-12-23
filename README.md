@@ -10,7 +10,9 @@ featuring:
 
 **tech stack:**
 
-made purely using python with the streamlit framework. also uses openai API, supabase, and bible api from https://bible-api.com
+- made purely using **_python_** with the **_streamlit_** framework.
+- **apis and databases:** this app uses openai API, supabase, and bible api from https://bible-api.com
+- deployed on **_render_** using **_docker_** to package the app.
 
 no more jumping around, navigating through a sea of google tabs during your daily bible study. one stop, dailybread.
 
