@@ -1,6 +1,6 @@
-### bible app, reinvented.
+## bible app, reinvented.
 
-**_introducing your new bible study buddy._**
+**introducing your new bible study buddy.**
 no more clunky features that get in the way of the word, just search a verse and get exactly what you want.
 featuring:
 
@@ -8,12 +8,12 @@ featuring:
 - login to make an account and **_save verses_** with or without notes, easily visible in the sidebar **_organized_** by book name
 - **_four different bible translations_** to suit your needs, with quick fetching and **_simple ui_**, allowing you to focus on the content rather than distractions.
 
-**_tech stack:_**
+**tech stack:**
 made purely using python with the streamlit framework. also uses openai API, supabase, and bible api from https://bible-api.com
 
 no more jumping around, navigating through a sea of google tabs during your daily bible study. one stop, dailybread.
 
-**_how to use (to supplement your bible studies)_**
+**how to use (to supplement your bible studies)**
 
 1. visit https://dailybread.streamlit.app
 2. wake up the app if it's asleep
@@ -24,4 +24,4 @@ no more jumping around, navigating through a sea of google tabs during your dail
 7. (optional) create an account / log in to save your passages and notes for easy access
 
 it's that simple! reducing the friction to open your bible -> get more out of the word of God.
-no more feeling like you won't understand a single thing (which is okay btw), or feeling like you have to open a million tabs, and more of making this habit easier.
+no more having to open a million tabs, and more of making this habit easier.
