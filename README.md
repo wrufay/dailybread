@@ -9,6 +9,7 @@ featuring:
 - **_four different bible translations_** to suit your needs, with quick fetching and **_simple ui_**, allowing you to focus on the content rather than distractions.
 
 **tech stack:**
+
 made purely using python with the streamlit framework. also uses openai API, supabase, and bible api from https://bible-api.com
 
 no more jumping around, navigating through a sea of google tabs during your daily bible study. one stop, dailybread.
@@ -17,11 +18,11 @@ no more jumping around, navigating through a sea of google tabs during your dail
 
 1. visit https://dailybread.streamlit.app
 2. wake up the app if it's asleep
-3. open up your irl bible (yup, this is meant to supplement, not replace!)
-4. search up the passage you're studying (detailed search instructions in the sidebar)
-5. whenever you run into something that confuses you or a word you dont know - simply ask the chat! it knows what passage you're looking at, so you dont need to feed it context, simply ask "what does ... mean?"
-6. use the link provided for enduring word bible commentary for detailed real life explanations - can't rely on ai :)
-7. (optional) create an account / log in to save your passages and notes for easy access
+3. open up your irl bible
+4. search up the passage you're studying
+5. whenever you run into something that confuses you or a word you dont know - simply ask the chat! it knows what passage you're looking at, so you dont need to feed it context. simply ask "what does ... mean?"
+6. use the link provided for enduring word bible commentary for detailed real life explanations
+7. create an account / log in to save your passages and notes for easy access
 
 it's that simple! reducing the friction to open your bible -> get more out of the word of God.
 no more having to open a million tabs, and more of making this habit easier.
