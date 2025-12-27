@@ -337,11 +337,11 @@ st.markdown("""
 
     /* user chat text color */
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-        color: #333 !important;
+        color: #f56476 !important;
     }
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) p,
     [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) div {
-        color: #333 !important;
+        color: #f56476 !important;
     }
 
     /* remove background from user messages */
