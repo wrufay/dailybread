@@ -286,7 +286,16 @@ st.markdown("""
     }
     .stApp {
         background: linear-gradient(135deg, #ffeef2, #ffe0e9);
-        text-align: center;
+        text-align: center !important;
+    }
+
+    /* center main content area */
+    .main .block-container {
+        text-align: center !important;
+    }
+
+    .main h1, .main h2, .main h3, .main p {
+        text-align: center !important;
     }
 
     /* sidebar styling */
