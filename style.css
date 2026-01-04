@@ -133,6 +133,7 @@ h2 {
   text-align: left;
   padding: 0 10px;
   border-radius: 8px;
+  font-family: "Nanum Gothic Coding", monospace;
   /* cursor: pointer; */
 }
 .bible-text:hover {
@@ -156,4 +157,11 @@ input[type="email"],
   color: var(--gray);
   text-align: center;
   margin-bottom: 0;
+}
+
+.verse-num {
+  background: var(--olive);
+  padding: 2px 7px;
+  border-radius: 2px;
+  color: var(--white);
 }

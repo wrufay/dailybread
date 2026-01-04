@@ -34,7 +34,7 @@ def init_auth_state():
 
 @st.dialog(" ")
 def auth_modal():
-    tab1, tab2 = st.tabs(["Log in ⊹₊˚", "I'm new here"]) 
+    tab1, tab2 = st.tabs(["Sign in ⊹", "I'm new here"]) 
 
     with tab1:
         # 1. LOGIN
@@ -257,7 +257,7 @@ if tz_string:
     st.session_state.user_tz = tz_string
 
 # title and header of page
-st.html("<p>1 John 4:19 ꣑ৎ We love because he first loved us.</p>")
+st.html("<p class='nanum-myeongjo-regular'>1 John 4:19 ꣑ৎ We love because he first loved us.</p>")
 
 # encode letter image to base64 for inline display
 def get_base64_image(image_path):
@@ -302,7 +302,7 @@ with st.sidebar:
                             verse_detail_modal(verse)
 
     else: # if user is not logged in, don't show
-        if st.button("Log in ⊹₊˚", key="open_auth_modal"):
+        if st.button("Log in ⊹", key="open_auth_modal"):
             auth_modal()
 
     st.markdown("---")
@@ -319,7 +319,7 @@ with st.sidebar:
     with st.form(key="feedback_form", clear_on_submit=True):
         name = st.text_input(label="Send me feedback!", placeholder="Your name")
         message = st.text_input(label="", placeholder="Your message here", label_visibility="collapsed")
-        submitted = st.form_submit_button("Send ⊹₊˚")
+        submitted = st.form_submit_button("Send ⊹")
 
         if submitted and name and message:
             supabase.table("feedback").insert({"name":name, "message":message}).execute()
@@ -419,7 +419,7 @@ def display_verse(bible_content, translation="kjv"):
 
         enduring_word_path = f'https://enduringword.com/bible-commentary/{pr}{ch}-{ve}/'
         for v in bible_content["verses"]:
-            st.html(f'<p class="bible-text">{v["verse"]} {v["text"]}</p>')
+            st.html(f'<p class="bible-text"><span class="verse-num">{v["verse"]}</span> {v["text"]}</p>')
 
             
         st.markdown("---")
