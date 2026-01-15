@@ -267,20 +267,19 @@ def get_base64_image(image_path):
 emoji_img_base64 = get_base64_image("reading.png")
 st.html(f"<h1 class='nanum-pen-script-regular front-title' style='text-align: center;'>You are firstloved, let's <img src='data:image/png;base64,{emoji_img_base64}' width='30'> read</h1>")
 
-
+st.markdown("---")
 # sidebar!
 with st.sidebar:
     
-    # full date and time
-    try:
-        user_tz = ZoneInfo(st.session_state.user_tz) if st.session_state.user_tz else ZoneInfo("America/Los_Angeles")
-    except:
-        user_tz = ZoneInfo("America/Los_Angeles")
-    now = datetime.now(user_tz)
-    st.html(f"<p>It's {now.strftime('%I:%M%p').lstrip('0')} on a {now.strftime('%A')}.</p>")
-
-
-    # check if user is logged in , display dif things
+    st.html("<h2 class='nanum-pen-script-regular'>Search Instructions</h2>")
+    st.html("""
+    <p>✱ Search an entire chapter like <span style='color: var(--red);'>Philippians 4</p>
+    <p>✱ Search a single verse like <span style='color: var(--red);'>Jeremiah 29:11</p>
+    <p>✱ Search a range of verses like <span style='color: var(--red);'>Matthew 6:25-34</p>
+    <p>✱ Search multiple chapters like <span style='color: var(--red);'>John 3:16-4:10</p>
+    """)
+    
+     #login button
     if st.session_state.user: # logged in
         if st.button("Log Out ⊹₊˚", key="logout_btn"):
             logout()
@@ -304,18 +303,24 @@ with st.sidebar:
     else: # if user is not logged in, don't show
         if st.button("Log in ⊹", key="open_auth_modal"):
             auth_modal()
-
+    
+    
+   
+    
     st.markdown("---")
-    st.html("<h2 class='nanum-pen-script-regular'>Search Instructions</h2>")
-    st.html("""
-    <p>Search an entire chapter like <span style='color: var(--red);'>Philippians 4</p>
-    <p>Search a single verse like <span style='color: var(--red);'>Jeremiah 29:11</p>
-    <p>Search a range of verses like <span style='color: var(--red);'>Matthew 6:25-34</p>
-    <p>Search multiple chapters like <span style='color: var(--red);'>John 3:16-4:10</p>
-    """)
+    
+    # full date and time
+    try:
+        user_tz = ZoneInfo(st.session_state.user_tz) if st.session_state.user_tz else ZoneInfo("America/Los_Angeles")
+    except:
+        user_tz = ZoneInfo("America/Los_Angeles")
+    now = datetime.now(user_tz)
+    st.html(f"<p>It's {now.strftime('%I:%M%p').lstrip('0')} on a {now.strftime('%A')}.</p>")
+
+
     
     # mini feedback bar for funsies
-    st.markdown("---")
+    
     with st.form(key="feedback_form", clear_on_submit=True):
         name = st.text_input(label="Send me feedback!", placeholder="Your name")
         message = st.text_input(label="", placeholder="Your message here", label_visibility="collapsed")
@@ -330,12 +335,9 @@ with st.sidebar:
     st.html("""
                 <div class='sidebar-footer'>
                 <small>Made with ♡ by <a class='sidebar-footer' href="https://github.com/wrufay/first-loved" target="_blank">Fay Wu</a></small>
-                </div>
-                """)
+                </div>""")
     
-    
-st.write("")
-st.write("")
+
 # front page columns (search tool) - using empty columns to center
 _, col1, col2, col3, _ = st.columns([0.5, 1, 1, 1, 0.5])
 with col1:
@@ -357,7 +359,7 @@ with col2:
 with col3:
     verse = st.text_input("Chapter + Verse", placeholder="4:19")
 
-st.write("")
+
 st.write("")
 _, btn_col1, btn_col2, _ = st.columns([0.5, 1, 1, 0.5])
 with btn_col1:

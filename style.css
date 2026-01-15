@@ -170,3 +170,7 @@ input[type="email"],
   border-radius: 2px;
   color: var(--white);
 }
+
+.front-title {
+  margin-bottom: -12px;
+}
