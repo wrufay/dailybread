@@ -23,7 +23,15 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY") or st.secrets.get("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Semantic search backend URL (local dev or deployed)
-SEMANTIC_SEARCH_URL = os.getenv("SEMANTIC_SEARCH_URL") or st.secrets.get("SEMANTIC_SEARCH_URL", "https://ssbackend-production-f786.up.railway.app")
+def get_semantic_search_url():
+    if os.getenv("SEMANTIC_SEARCH_URL"):
+        return os.getenv("SEMANTIC_SEARCH_URL")
+    try:
+        return st.secrets.get("SEMANTIC_SEARCH_URL", "https://ssbackend-production-f786.up.railway.app")
+    except:
+        return "https://ssbackend-production-f786.up.railway.app"
+
+SEMANTIC_SEARCH_URL = get_semantic_search_url()
 
 st.set_page_config(page_title="First Loved Bible", page_icon="flower.png", layout="centered", initial_sidebar_state="expanded")
 
