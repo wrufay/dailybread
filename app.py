@@ -22,6 +22,9 @@ SUPABASE_URL = os.getenv("SUPABASE_URL") or st.secrets.get("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") or st.secrets.get("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Semantic search backend URL (local dev or deployed)
+SEMANTIC_SEARCH_URL = os.getenv("SEMANTIC_SEARCH_URL") or st.secrets.get("SEMANTIC_SEARCH_URL", "https://ssbackend-production-f786.up.railway.app")
+
 st.set_page_config(page_title="First Loved Bible", page_icon="flower.png", layout="centered", initial_sidebar_state="expanded")
 
 # login authentication featurss
@@ -250,6 +253,8 @@ if "access_token" in st.session_state and st.session_state.access_token:
 
 if "verse_results" not in st.session_state:
     st.session_state.verse_results = None
+if "semantic_results" not in st.session_state:
+    st.session_state.semantic_results = None
 if "user_tz" not in st.session_state:
     st.session_state.user_tz = None
 tz_string = streamlit_js_eval(js_expressions="Intl.DateTimeFormat().resolvedOptions().timeZone", key="tz")
@@ -273,10 +278,12 @@ with st.sidebar:
     
     st.html("<h2 class='nanum-pen-script-regular'>Search Instructions</h2>")
     st.html("""
+    <p><b>By Reference:</b></p>
     <p>✱ Search an entire chapter like <span style='color: var(--red);'>Philippians 4</p>
     <p>✱ Search a single verse like <span style='color: var(--red);'>Jeremiah 29:11</p>
     <p>✱ Search a range of verses like <span style='color: var(--red);'>Matthew 6:25-34</p>
-    <p>✱ Search multiple chapters like <span style='color: var(--red);'>John 3:16-4:10</p>
+    <p><b>By Meaning:</b></p>
+    <p>✱ Search topics like <span style='color: var(--red);'>finding peace</span> or <span style='color: var(--red);'>feeling anxious</span></p>
     """)
     
      #login button
@@ -339,39 +346,78 @@ with st.sidebar:
     
 
 # front page columns (search tool) - using empty columns to center
-_, col1, col2, col3, _ = st.columns([0.5, 1, 1, 1, 0.5])
-with col1:
-    TRANSLATIONS = {
-        "kjv": "King James Version",
-        "web": "World English Bible",
-        "bbe": "Bible in Basic English",
-        "asv": "American Standard Version", 
-    }
-    translation = st.selectbox(
-        "Select Translation",
-        options=TRANSLATIONS.keys(),
-        format_func=lambda x: TRANSLATIONS[x]
-    )
+# initialize search mode
+if "search_mode" not in st.session_state:
+    st.session_state.search_mode = "reference"
 
-with col2:
-    book = st.text_input("Book Name", placeholder="1 John")
+search_tab1, search_tab2 = st.tabs(["By Reference", "By Meaning"])
 
-with col3:
-    verse = st.text_input("Chapter + Verse", placeholder="4:19")
+with search_tab1:
+    _, col1, col2, col3, _ = st.columns([0.5, 1, 1, 1, 0.5])
+    with col1:
+        TRANSLATIONS = {
+            "kjv": "King James Version",
+            "web": "World English Bible",
+            "bbe": "Bible in Basic English",
+            "asv": "American Standard Version",
+        }
+        translation = st.selectbox(
+            "Select Translation",
+            options=TRANSLATIONS.keys(),
+            format_func=lambda x: TRANSLATIONS[x]
+        )
 
+    with col2:
+        book = st.text_input("Book Name", placeholder="1 John")
 
-st.write("")
-_, btn_col1, btn_col2, _ = st.columns([0.5, 1, 1, 0.5])
-with btn_col1:
-    if "show_ai_chat" not in st.session_state:
-        st.session_state.show_ai_chat = False
+    with col3:
+        verse = st.text_input("Chapter + Verse", placeholder="4:19")
 
-    if st.button("Ask Claude" if not st.session_state.show_ai_chat else "Hide chat", use_container_width=True):
-        st.session_state.show_ai_chat = not st.session_state.show_ai_chat
-        st.rerun()
-with btn_col2:
-    search_button = st.button("Search passage", use_container_width=True)
+    st.write("")
+    _, btn_col1, btn_col2, _ = st.columns([0.5, 1, 1, 0.5])
+    with btn_col1:
+        if "show_ai_chat" not in st.session_state:
+            st.session_state.show_ai_chat = False
+
+        if st.button("Ask Claude" if not st.session_state.show_ai_chat else "Hide chat", use_container_width=True, key="claude_btn_ref"):
+            st.session_state.show_ai_chat = not st.session_state.show_ai_chat
+            st.rerun()
+    with btn_col2:
+        search_button = st.button("Search passage", use_container_width=True)
+
+with search_tab2:
+    st.caption("Search by topic, feeling, or question — find verses by meaning")
+    _, sem_col, _ = st.columns([0.5, 2, 0.5])
+    with sem_col:
+        semantic_query = st.text_input("What are you looking for?", placeholder="e.g. feeling anxious, finding peace, God's love", key="semantic_query")
+        num_results = st.slider("Number of results", min_value=3, max_value=20, value=5, key="num_results")
+
+    _, sem_btn_col, _ = st.columns([0.5, 2, 0.5])
+    with sem_btn_col:
+        semantic_search_button = st.button("Search by meaning", use_container_width=True)
     
+
+# semantic search using the ML backend
+def semantic_search(query: str, top_k: int = 10):
+    """Search for verses by meaning using the semantic search backend."""
+    try:
+        response = requests.post(
+            f"{SEMANTIC_SEARCH_URL}/search",
+            json={"query": query, "top_k": top_k},
+            timeout=10
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Search failed (Status: {response.status_code})")
+            return None
+    except requests.exceptions.ConnectionError:
+        st.error("Semantic search backend not available. Make sure it's running.")
+        return None
+    except Exception as e:
+        st.error(f"Search error: {str(e)}")
+        return None
+
 
 # get the verse with bible api
 def get_verse(book, verse, translation):
@@ -439,7 +485,7 @@ def display_verse(bible_content, translation="kjv"):
         st.markdown("---")
         
         
-# trigger with the search btn
+# trigger with the search btn (reference search)
 if search_button:
     if book and verse:
         with st.spinner("..."):
@@ -447,14 +493,52 @@ if search_button:
             if result:
                 st.session_state.verse_results = result
                 st.session_state.current_translation = translation
-    # elif book and not verse:
-    #     st.warning("Please enter a chapter and verse.")
-    # else:
-    #     st.warning("Please enter both a book name and verse.")
+                st.session_state.semantic_results = None  # clear semantic results
+
+# trigger semantic search
+if semantic_search_button:
+    if semantic_query:
+        with st.spinner("Searching by meaning..."):
+            result = semantic_search(semantic_query, num_results)
+            if result:
+                st.session_state.semantic_results = result
+                st.session_state.verse_results = None  # clear reference results
 
 
 current_translation = st.session_state.get("current_translation", "kjv")
 display_verse(st.session_state.verse_results, current_translation)
+
+# display semantic search results
+if st.session_state.get("semantic_results"):
+    semantic_data = st.session_state.semantic_results
+    st.markdown("---")
+    st.caption(f"Results for: **{semantic_data['query']}**")
+
+    for i, result in enumerate(semantic_data["results"]):
+        score_pct = int(result["score"] * 100)
+        with st.container():
+            st.markdown(f"**{result['reference']}**")
+            st.progress(result["score"], text=f"{score_pct}% match")
+            st.html(f'<p class="bible-text">{result["text"]}</p>')
+
+            # option to load full chapter context
+            col_load, col_save = st.columns(2)
+            with col_load:
+                if st.button(f"Load in KJV", key=f"load_sem_{i}"):
+                    book_name = result["book"]
+                    ch_verse = f"{result['chapter']}:{result['verse']}"
+                    full_result = get_verse(book_name, ch_verse, "kjv")
+                    if full_result:
+                        st.session_state.verse_results = full_result
+                        st.session_state.current_translation = "kjv"
+                        st.session_state.semantic_results = None
+                        st.rerun()
+            with col_save:
+                if st.session_state.user:
+                    if st.button(f"Bookmark", key=f"save_sem_{i}"):
+                        save_verse_modal(result["reference"], "KJV")
+
+            st.markdown("---")
 
 
 # implement large language model

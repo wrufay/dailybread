@@ -12,6 +12,11 @@
   --white: #fcfcfa;
 }
 
+/* Hide Streamlit header bar */
+header[data-testid="stHeader"] {
+  display: none !important;
+}
+
 /* font classes */
 .shizuru {
   font-family: "Shizuru", cursive;
